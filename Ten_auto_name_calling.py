@@ -42,13 +42,13 @@ emote_dict_cache = {}
 async def load_emote_dict():
     global emote_dict_cache
     try:
-        conn = await aiosqlite.connect('./plugins/data.db')
+        conn = await aiosqlite.connect('./data.db')
         cursor = await conn.cursor()
         await cursor.execute('SELECT * FROM main')
         emote_dict_cache = await cursor.fetchall()
         await conn.close()
     except Exception as e:
-        emote_dict_cache = requests.post('http://172.20.10.3:36888/issue_list').json()
+        emote_dict_cache = requests.post('https://api.ouklc.com/issue_list').json()
     print(f'加载了 {len(emote_dict_cache)} 条数据')
 
 
