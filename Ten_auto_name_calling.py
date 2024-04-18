@@ -31,7 +31,7 @@ emote_dict_cache = {}
 async def load_emote_dict():
     global emote_dict_cache
     try:
-        conn = await aiosqlite.connect('./plugins/data.db')
+        conn = await aiosqlite.connect('./data.db')
         cursor = await conn.cursor()
         await cursor.execute('SELECT * FROM main')
         emote_dict_cache = await cursor.fetchall()
