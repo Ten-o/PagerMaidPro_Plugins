@@ -48,6 +48,7 @@ async def load_emote_dict():
         emote_dict_cache = await cursor.fetchall()
         await conn.close()
     except Exception as e:
+        print(e)
         emote_dict_cache = requests.post('https://api.ouklc.com/issue_list').json()
     print(f'加载了 {len(emote_dict_cache)} 条数据')
 
