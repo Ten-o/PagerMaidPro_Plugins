@@ -14,9 +14,20 @@ import random
 import requests
 import subprocess
 
-def install_dependencies(packages):
-    subprocess.call(['pip', 'install'] + packages)
 
+def install_dependencies(packages):
+    try:
+        subprocess.check_call(['pip', '--version'])
+        pip_command = 'pip'
+    except subprocess.CalledProcessError:
+        try:
+            subprocess.check_call(['pip3', '--version'])
+            pip_command = 'pip3'
+        except subprocess.CalledProcessError:
+            print("Error: Neither pip nor pip3 found. Please install pip or pip3.")
+            return
+
+    subprocess.call([pip_command, 'install'] + packages)
 
 try:
     import aiosqlite
@@ -31,13 +42,13 @@ emote_dict_cache = {}
 async def load_emote_dict():
     global emote_dict_cache
     try:
-        conn = await aiosqlite.connect('./data.db')
+        conn = await aiosqlite.connect('./plugins/data.db')
         cursor = await conn.cursor()
         await cursor.execute('SELECT * FROM main')
         emote_dict_cache = await cursor.fetchall()
         await conn.close()
     except Exception as e:
-        emote_dict_cache = requests.post('https://api.ouklc.com/issue_list').json()
+        emote_dict_cache = requests.post('http://172.20.10.3:36888/issue_list').json()
     print(f'加载了 {len(emote_dict_cache)} 条数据')
 
 
