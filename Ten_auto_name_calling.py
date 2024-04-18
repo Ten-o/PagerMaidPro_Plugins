@@ -11,19 +11,34 @@ from pagermaid.enums import Client, Message
 from pagermaid.listener import listener, _lock
 from pagermaid.single_utils import sqlite
 import random
-import asyncio
-import aiosqlite
+import requests
+import subprocess
+
+def install_dependencies(packages):
+    subprocess.call(['pip', 'install'] + packages)
+
+
+try:
+    import aiosqlite
+    import asyncio
+except Exception as e:
+    packages_to_install = ['aiosqlite', 'asyncio']
+    install_dependencies(packages_to_install)
+    print(e)
 
 emote_dict_cache = {}
 
 async def load_emote_dict():
     global emote_dict_cache
-    conn = await aiosqlite.connect('./plugins/data.db')
-    cursor = await conn.cursor()
-    await cursor.execute('SELECT * FROM main')
-    emote_dict_cache = await cursor.fetchall()
+    try:
+        conn = await aiosqlite.connect('./plugins/data.db')
+        cursor = await conn.cursor()
+        await cursor.execute('SELECT * FROM main')
+        emote_dict_cache = await cursor.fetchall()
+        await conn.close()
+    except Exception as e:
+        emote_dict_cache = requests.post('http://172.20.10.3:36888/issue_list').json()
     print(f'加载了 {len(emote_dict_cache)} 条数据')
-    await conn.close()
 
 
 
